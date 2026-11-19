@@ -1,0 +1,77 @@
+<html>
+<head>
+
+<style>
+
+body {
+background-color:lightblue;
+font-family:Arial;
+}
+
+h1 {
+color:darkblue;
+}
+
+input {
+padding:10px;
+}
+
+button {
+padding:10px;
+background-color:darkblue;
+color:white;
+}
+
+#result {
+margin-top:20px;
+background-color:white;
+padding:10px;
+}
+
+</style>
+</head>
+
+<body>
+<center>
+<h1>Weather Information</h1>
+<br>
+<hr>
+<input type="text" id="city" placeholder="Enter a Name">
+<br>
+<button onClick="GetData()">GetData</button>
+<br>
+<div id="result"></div>
+</center>
+
+<script>
+
+function GetData()
+{
+let place = document.getElementById("city").value;
+fetch("https://geocoding-api.open-meteo.com/v1/search?name=" + place + "&count=1")
+.then(response => response.json())
+.then(data => {
+let longitude = data.results[0].longitude;
+let latitude = data.results[0].latitude;
+weather_details(longitude, latitude);
+})
+.catch(error => console.log(error));
+}
+
+function weather_details(lo, la)
+{
+
+fetch("https://api.open-meteo.com/v1/forecast?latitude=" + la + "&longitude=" + lo + "&current=temperature_2m,relative_humidity_2m&daily=temperature_2m_max,relative_humidity_2m_max&timezone=auto")
+.then(response => response.json())
+.then(data => {
+document.getElementById("result").innerHTML =
+"City Temperature: " + data.daily.temperature_2m_max[0] + " °C<br>" +
+"Current Temperature: " + data.current.temperature_2m + " °C<br>" +
+"City Humidity: " + data.daily.relative_humidity_2m_max[0] + " %<br>" +
+"Current Humidity: " + data.current.relative_humidity_2m + " %";
+})
+.catch(error => console.log(error));
+}
+</script>
+</body>
+</html>
